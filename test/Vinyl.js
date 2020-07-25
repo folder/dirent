@@ -388,7 +388,6 @@ describe('File', () => {
       const expected2 = path.normalize(isWin ? val2.slice(0, -1) : val2);
 
       file.cwd = val2;
-
       assert.equal(file.cwd, expected2);
     });
 
