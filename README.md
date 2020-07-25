@@ -1,4 +1,4 @@
-# dirent [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=W8YFZ425KND68) [![NPM version](https://img.shields.io/npm/v/dirent.svg?style=flat)](https://www.npmjs.com/package/dirent) [![NPM monthly downloads](https://img.shields.io/npm/dm/dirent.svg?style=flat)](https://npmjs.org/package/dirent) [![NPM total downloads](https://img.shields.io/npm/dt/dirent.svg?style=flat)](https://npmjs.org/package/dirent) [![Build Status](https://travis-ci.org/folder/dirent.svg?branch=master)](https://travis-ci.org/folder/dirent)
+# dirent [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=W8YFZ425KND68) [![NPM version](https://img.shields.io/npm/v/dirent.svg?style=flat)](https://www.npmjs.com/package/dirent) [![NPM monthly downloads](https://img.shields.io/npm/dm/dirent.svg?style=flat)](https://npmjs.org/package/dirent) [![NPM total downloads](https://img.shields.io/npm/dt/dirent.svg?style=flat)](https://npmjs.org/package/dirent) ![Tests](https://github.com/folder/dirent/workflows/tests/badge.svg)
 
 > Virtual file class. Extends fs.Dirent with methods to simplify path handling. Like Vinyl, but lightweight.
 
@@ -54,6 +54,8 @@ const file = new File({ path: 'foo.js' });
 <summary><strong>Contributing</strong></summary>
 
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
+
+Please read the [contributing guide](.github/contributing.md) for advice on opening issues, pull requests, and coding standards.
 
 </details>
 
