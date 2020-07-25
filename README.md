@@ -42,7 +42,7 @@ Stream support is added using the [cloneable-readable](https://github.com/mcolli
 
 ```js
 const clonable = require('cloneable-readable');
-const Dirent = require('@folder/dirent');
+const Dirent = require('dirent');
 const File = Dirent.create(cloneable);
 
 const file = new File({ path: 'foo.js' });
