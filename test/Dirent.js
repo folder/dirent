@@ -14,7 +14,7 @@ describe('Dirent', () => {
     assert(new Dirent() instanceof Dirent);
   });
 
-  it('should add stream support', () => {
+  it('should add stream support', cb => {
     const options = {
       cwd: '/',
       base: '/test/',

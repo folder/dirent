@@ -18,7 +18,7 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha",
-    "cover": "nyc --reporter=text --reporter=html mocha"
+    "test:ci": "npm run test"
   },
   "dependencies": {
     "clone-deep": "^4.0.1"
@@ -29,7 +29,6 @@
     "from2": "^2.3.0",
     "gulp-format-md": "^2.0.0",
     "mocha": "^8.0.1",
-    "nyc": "^15.1.0",
     "pump": "^3.0.0"
   },
   "keywords": [
@@ -49,21 +48,18 @@
     "vinyl",
     "virtual file"
   ],
-  "eslintConfig": {
-    "rules": {
-      "no-console": 0
-    }
-  },
   "verb": {
     "toc": false,
     "layout": "default",
     "tasks": [
       "readme"
     ],
-    "related": [
-      "@folder/readdir",
-      "@folder/xdg"
-    ],
+    "related": {
+      "links": [
+        "@folder/readdir",
+        "@folder/xdg"
+      ]
+    },
     "plugins": [
       "gulp-format-md"
     ],
