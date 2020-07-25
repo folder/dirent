@@ -1,4 +1,4 @@
-# dirent [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=W8YFZ425KND68) [![NPM version](https://img.shields.io/npm/v/dirent.svg?style=flat)](https://www.npmjs.com/package/dirent) [![NPM monthly downloads](https://img.shields.io/npm/dm/dirent.svg?style=flat)](https://npmjs.org/package/dirent) [![NPM total downloads](https://img.shields.io/npm/dt/dirent.svg?style=flat)](https://npmjs.org/package/dirent) ![Tests](https://github.com/folder/dirent/workflows/tests/badge.svg)
+# dirent
 
 > Virtual file class. Extends fs.Dirent with methods to simplify path handling. Like Vinyl, but lightweight.
 
@@ -6,7 +6,7 @@ Please consider following this project's author, [Jon Schlinkert](https://github
 
 ## Install
 
-Install with [npm](https://www.npmjs.com/) (requires [Node.js](https://nodejs.org/en/) >=8):
+Install with [npm](https://www.npmjs.com/) (requires [Node.js](https://nodejs.org/en/) >=10):
 
 ```sh
 $ npm install --save dirent
