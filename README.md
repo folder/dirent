@@ -1,4 +1,4 @@
-# @folder/dirent [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=W8YFZ425KND68) [![NPM version](https://img.shields.io/npm/v/@folder/dirent.svg?style=flat)](https://www.npmjs.com/package/@folder/dirent) [![NPM monthly downloads](https://img.shields.io/npm/dm/@folder/dirent.svg?style=flat)](https://npmjs.org/package/@folder/dirent) [![NPM total downloads](https://img.shields.io/npm/dt/@folder/dirent.svg?style=flat)](https://npmjs.org/package/@folder/dirent) [![Build Status](https://travis-ci.org/@folder/folder.svg?branch=master)](https://travis-ci.org/@folder/folder)
+# dirent [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=W8YFZ425KND68) [![NPM version](https://img.shields.io/npm/v/dirent.svg?style=flat)](https://www.npmjs.com/package/dirent) [![NPM monthly downloads](https://img.shields.io/npm/dm/dirent.svg?style=flat)](https://npmjs.org/package/dirent) [![NPM total downloads](https://img.shields.io/npm/dt/dirent.svg?style=flat)](https://npmjs.org/package/dirent) [![Build Status](https://travis-ci.org/@folder/dirent.svg?branch=master)](https://travis-ci.org/@folder/dirent)
 
 > Virtual file class. Extends fs.Dirent with methods to simplify path handling. Like Vinyl, but lightweight.
 
@@ -9,7 +9,7 @@ Please consider following this project's author, [Jon Schlinkert](https://github
 Install with [npm](https://www.npmjs.com/) (requires [Node.js](https://nodejs.org/en/) >=8):
 
 ```sh
-$ npm install --save @folder/dirent
+$ npm install --save dirent
 ```
 
 ## Credit
@@ -27,7 +27,7 @@ The API for path handling is close enough that you can use Vinyl's docs as a ref
 ## Usage
 
 ```js
-const Dirent = require('@folder/dirent');
+const Dirent = require('dirent');
 
 // Pass a file path as a string, or an object with properties to add to the dirent
 // The following examples are equivalent. When the path is a string, it will

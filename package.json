@@ -1,12 +1,12 @@
 {
-  "name": "@folder/dirent",
+  "name": "dirent",
   "description": "Virtual file class. Extends fs.Dirent with methods to simplify path handling. Like Vinyl, but lightweight.",
   "version": "1.0.0",
-  "homepage": "https://github.com/@folder/dirent",
+  "homepage": "https://github.com/folder/dirent",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "@folder/dirent",
   "bugs": {
-    "url": "https://github.com/@folder/dirent/issues"
+    "url": "https://github.com/folder/dirent/issues"
   },
   "engines": {
     "node": ">=8"
