@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "homepage": "https://github.com/folder/dirent",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
-  "repository": "@folder/dirent",
+  "repository": "folder/dirent",
   "bugs": {
     "url": "https://github.com/folder/dirent/issues"
   },
