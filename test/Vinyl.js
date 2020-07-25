@@ -8,7 +8,7 @@ const assert = require('assert').strict;
 const concat = require('concat-stream');
 const from = require('from2');
 const pipe = require('pump');
-const File = require('../');
+const File = require('..').create(require('cloneable-readable'));
 
 /**
  * Tests from Vinyl. Most stream tests were removed.
@@ -345,7 +345,7 @@ describe('File', () => {
         contents: from([])
       });
 
-      assert.equal(file.inspect(), '<Dirent "test.coffee" <Stream>>');
+      assert.equal(file.inspect(), '<Dirent "test.coffee" <CloneableStream>>');
     });
 
     it('returns correct format when null contents and relative path', () => {
@@ -519,8 +519,322 @@ describe('File', () => {
     });
   });
 
-  describe('relative get/set', () => {
+  describe('clone()', () => {
+    it('copies all attributes over with Buffer contents', cb => {
+      const options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: Buffer.from('test')
+      };
+      const file = new File(options);
+      const file2 = file.clone();
 
+      assert(file2 !== file);
+      assert.equal(file2.cwd, file.cwd);
+      assert.equal(file2.base, file.base);
+      assert.equal(file2.path, file.path);
+      assert(file2.contents !== file.contents);
+      assert.equal(file2.contents.toString(), file.contents.toString());
+      cb();
+    });
+
+    it('assigns Buffer content reference when contents option is false', cb => {
+      const options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.js',
+        contents: Buffer.from('test')
+      };
+      const file = new File(options);
+
+      const copy1 = file.clone({ contents: false });
+      assert(copy1.contents, file.contents);
+
+      const copy2 = file.clone();
+      assert(copy2.contents !== file.contents);
+
+      const copy3 = file.clone({ contents: 'invalid' });
+      assert(copy3.contents !== file.contents);
+      cb();
+    });
+
+    it('copies all attributes over with Stream contents', cb => {
+      const options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: from(['wa', 'dup'])
+      };
+
+      const file = new File(options);
+      const file2 = file.clone();
+
+      assert(file2 !== file);
+      assert.equal(file2.cwd, file.cwd);
+      assert.equal(file2.base, file.base);
+      assert.equal(file2.path, file.path);
+      assert(file2.contents !== file.contents);
+
+      let ends = 2;
+      let data = null;
+      let output = null;
+
+      function compare(err) {
+        if (err) {
+          cb(err);
+          return;
+        }
+
+        if (--ends === 0) {
+          assert(data !== output);
+          assert.equal(data.toString(), output.toString());
+          cb();
+        }
+      }
+
+      pipe([
+        file.contents,
+        concat(function(d) {
+          data = d;
+        })
+      ], compare);
+
+      pipe([
+        file2.contents,
+        concat(function(d) {
+          output = d;
+        })
+      ], compare);
+    });
+
+    it('does not start flowing until all clones flows (data)', cb => {
+      const options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: from(['wa', 'dup'])
+      };
+      const file = new File(options);
+      const file2 = file.clone();
+      let ends = 2;
+
+      let data = '';
+      let output = '';
+
+      function compare() {
+        if (--ends === 0) {
+          assert.equal(data, output);
+          cb();
+        }
+      }
+
+      // Start flowing file2
+      file2.contents.on('data', function(chunk) {
+        output += chunk.toString();
+      });
+
+      process.nextTick(() => {
+        // Nothing was written yet
+        assert.equal(data, '');
+        assert.equal(output, '');
+
+        // Starts flowing file
+        file.contents.on('data', function(chunk) {
+          data += chunk.toString();
+        });
+      });
+
+      file2.contents.on('end', compare);
+      file.contents.on('end', compare);
+    });
+
+    it('does not start flowing until all clones flow (readable)', cb => {
+      const options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: from(['wa', 'dup'])
+      };
+      const file = new File(options);
+      const file2 = file.clone();
+
+      let output = '';
+
+      function compare(data) {
+        assert.equal(data.toString(), output);
+      }
+
+      // Start flowing file2
+      file2.contents.on('readable', function() {
+        let chunk;
+        while ((chunk = this.read()) !== null) {
+          output += chunk.toString();
+        }
+      });
+
+      pipe([file.contents, concat(compare)], cb);
+    });
+
+    it('copies all attributes over with null contents', cb => {
+      const options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: null
+      };
+      const file = new File(options);
+      const file2 = file.clone();
+
+      assert(file2 !== file);
+      assert.equal(file2.cwd, file.cwd);
+      assert.equal(file2.base, file.base);
+      assert.equal(file2.path, file.path);
+      assert.equal(file2.contents, null);
+      cb();
+    });
+
+    it('properly clones the `stat` property', cb => {
+      const options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.js',
+        contents: Buffer.from('test'),
+        stat: fs.statSync(__filename)
+      };
+
+      const file = new File(options);
+      const copy = file.clone();
+
+      assert.equal(copy.stat.isFile(), true);
+      assert.equal(copy.stat.isDirectory(), false);
+      assert(file.stat instanceof fs.Stats);
+      assert(copy.stat instanceof fs.Stats);
+      cb();
+    });
+
+    it('properly clones the `history` property', () => {
+      const options = {
+        cwd: path.normalize('/'),
+        base: path.normalize('/test/'),
+        path: path.normalize('/test/test.js'),
+        contents: Buffer.from('test')
+      };
+
+      const file = new File(options);
+      const copy = file.clone();
+
+      assert.equal(copy.history[0], options.path);
+      copy.path = 'lol';
+      assert(file.path !== copy.path);
+    });
+
+    it('copies custom properties', cb => {
+      const options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: null,
+        custom: { meta: {} }
+      };
+
+      const file = new File(options);
+      const file2 = file.clone();
+
+      assert(file2 !== file);
+      assert.equal(file2.cwd, file.cwd);
+      assert.equal(file2.base, file.base);
+      assert.equal(file2.path, file.path);
+      assert(file2.custom !== file.custom);
+      assert(file2.custom.meta !== file.custom.meta);
+      assert.deepEqual(file2.custom, file.custom);
+      cb();
+    });
+
+    it('copies history', cb => {
+      const options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: null
+      };
+      const history = [
+        path.normalize('/test/test.coffee'),
+        path.normalize('/test/test.js'),
+        path.normalize('/test/test-938di2s.js')
+      ];
+
+      const file = new File(options);
+      file.path = history[1];
+      file.path = history[2];
+      const file2 = file.clone();
+
+      assert.deepEqual(file2.history, history);
+      assert(file2.history !== file.history);
+      assert.equal(file2.path, history[2]);
+      cb();
+    });
+
+    it('supports deep & shallow copy of all attributes', cb => {
+      const options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: null,
+        custom: { meta: {} }
+      };
+
+      const file = new File(options);
+
+      const file2 = file.clone();
+      assert.equal(file2.custom.toString(), file.custom.toString());
+      assert(file2.custom !== file.custom);
+      assert.deepEqual(file2.custom.meta, file.custom.meta);
+      assert(file2.custom.meta !== file.custom.meta);
+
+      const file3 = file.clone(true);
+      assert.deepEqual(file3.custom, file.custom);
+      assert(file3.custom !== file.custom);
+      assert.deepEqual(file3.custom.meta, file.custom.meta);
+      assert(file3.custom.meta !== file.custom.meta);
+
+      const file4 = file.clone({ deep: true });
+      assert.deepEqual(file4.custom, file.custom);
+      assert(file4.custom !== file.custom);
+      assert.deepEqual(file4.custom.meta, file.custom.meta);
+      assert(file4.custom.meta !== file.custom.meta);
+
+      const file5 = file.clone(false);
+      assert.deepEqual(file5.custom, file.custom);
+      assert(file5.custom, file.custom);
+      assert.deepEqual(file5.custom.meta, file.custom.meta);
+      assert(file.custom.meta, file.custom.meta);
+
+      const file6 = file.clone({ deep: false });
+      assert.deepEqual(file6.custom, file.custom);
+      assert(file6.custom, file.custom);
+      assert.deepEqual(file6.custom.meta, file.custom.meta);
+      assert(file.custom.meta, file.custom.meta);
+
+      cb();
+    });
+
+    it('supports inheritance', () => {
+      class ExtendedFile extends File {}
+
+      const file = new ExtendedFile();
+      const file2 = file.clone();
+
+      assert(file2 !== file);
+      assert(file2.constructor, ExtendedFile);
+      assert(file2 instanceof ExtendedFile);
+      assert(file2 instanceof File);
+      assert.equal(ExtendedFile.prototype.isPrototypeOf(file2), true);
+      assert.equal(File.prototype.isPrototypeOf(file2), true);
+    });
+  });
+
+  describe('relative get/set', () => {
     it('throws on set', () => {
       const file = new File();
 

@@ -2,19 +2,68 @@
 
 require('mocha');
 const fs = require('fs');
-const path = require('path');
 const assert = require('assert').strict;
+const cloneable = require('cloneable-readable');
+const concat = require('concat-stream');
+const from = require('from2');
+const pipe = require('pump');
 const Dirent = require('..');
-
-const getDirent = (dir, name) => {
-  const files = fs.readdirSync(dir, { withFileTypes: true });
-  const main = files.find(f => f.name === name);
-  return path.join(dir, main.name);
-};
 
 describe('Dirent', () => {
   it('should create a Dirent instance', () => {
     assert(new Dirent() instanceof Dirent);
+  });
+
+  it('should add stream support', () => {
+    const options = {
+      cwd: '/',
+      base: '/test/',
+      path: '/test/test.coffee',
+      contents: from(['wa', 'dup'])
+    };
+
+    const File = Dirent.create(cloneable);
+    const file = new File(options);
+    assert.equal(file.isStream(), true);
+
+    const file2 = file.clone();
+
+    assert(file2 !== file);
+    assert.equal(file2.cwd, file.cwd);
+    assert.equal(file2.base, file.base);
+    assert.equal(file2.path, file.path);
+    assert(file2.contents !== file.contents);
+
+    let ends = 2;
+    let data = null;
+    let output = null;
+
+    function compare(err) {
+      if (err) {
+        cb(err);
+        return;
+      }
+
+      if (--ends === 0) {
+        assert(data !== output);
+        assert.equal(data.toString(), output.toString());
+        cb();
+      }
+    }
+
+    pipe([
+      file.contents,
+      concat(function(d) {
+        data = d;
+      })
+    ], compare);
+
+    pipe([
+      file2.contents,
+      concat(function(d) {
+        output = d;
+      })
+    ], compare);
   });
 
   it('should set dirent.path when value is an object', () => {

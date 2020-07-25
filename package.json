@@ -19,7 +19,11 @@
     "test": "mocha",
     "cover": "nyc --reporter=text --reporter=html mocha"
   },
+  "dependencies": {
+    "clone-deep": "^4.0.1"
+  },
   "devDependencies": {
+    "cloneable-readable": "^2.0.1",
     "concat-stream": "^2.0.0",
     "from2": "^2.3.0",
     "gulp-format-md": "^2.0.0",

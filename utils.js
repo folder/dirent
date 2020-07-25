@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const isObject = value => value !== null && typeof value === 'object';
 
-exports.builtInFields = new Set(['contents', 'stat', 'history', 'path', 'base', 'cwd']);
+exports.builtinProperties = new Set(['constructor', 'contents', 'stat', 'history', 'path', 'base', 'cwd']);
 
 exports.isBuffer = value => {
   if (isObject(value) && value.constructor && typeof value.constructor.isBuffer === 'function') {
@@ -72,7 +72,7 @@ exports.join = (...args) => {
 
 exports.handlers = (Dirent, dirent) => ({
   get(file, prop) {
-    if (exports.builtInFields.has(prop)) return file[prop];
+    if (exports.builtinProperties.has(prop)) return file[prop];
 
     const direntDesc = getOwnPropertyDescriptor(dirent.constructor.prototype, prop);
     if (direntDesc && typeof direntDesc.value === 'function' && !(dirent instanceof fs.Dirent)) {
