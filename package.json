@@ -1,0 +1,69 @@
+{
+  "name": "@folder/dirent",
+  "description": "Virtual file class. Extends fs.Dirent with methods to simplify path handling. Like Vinyl, but lightweight.",
+  "version": "1.0.0",
+  "homepage": "https://github.com/@folder/dirent",
+  "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
+  "repository": "@folder/dirent",
+  "bugs": {
+    "url": "https://github.com/@folder/dirent/issues"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "files": [
+    "index.js"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha",
+    "cover": "nyc --reporter=text --reporter=html mocha"
+  },
+  "devDependencies": {
+    "concat-stream": "^2.0.0",
+    "from2": "^2.3.0",
+    "gulp-format-md": "^2.0.0",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
+    "pump": "^3.0.0"
+  },
+  "keywords": [
+    "directory entity",
+    "directory",
+    "dirent",
+    "entity",
+    "file system",
+    "file",
+    "file-system",
+    "fs",
+    "fs.Dirent",
+    "path",
+    "readdir",
+    "readdirsync",
+    "vfile",
+    "vinyl",
+    "virtual file"
+  ],
+  "eslintConfig": {
+    "rules": {
+      "no-console": 0
+    }
+  },
+  "verb": {
+    "toc": false,
+    "layout": "default",
+    "tasks": [
+      "readme"
+    ],
+    "related": [
+      "@folder/readdir",
+      "@folder/xdg"
+    ],
+    "plugins": [
+      "gulp-format-md"
+    ],
+    "lint": {
+      "reflinks": true
+    }
+  }
+}
