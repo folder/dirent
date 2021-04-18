@@ -2,7 +2,6 @@
 
 const kBase = Symbol('base');
 const kCwd = Symbol('cwd');
-const kClonable = Symbol('cloneable');
 const kContents = Symbol('contents');
 const kSymlink = Symbol('symlink');
 const kDirent = Symbol('dirent');
@@ -18,36 +17,48 @@ const {
   handlers,
   isBuffer,
   isStream,
-  join,
   normalize,
   pathError,
   replaceExtname
 } = require('./utils');
 
-const create = cloneable => {
+/**
+ * Create the Dirent class by optionally passing a clonable stream.
+ */
 
+const create = clonableStream => {
   class Dirent extends fs.Dirent {
     constructor(dirent = {}, type) {
-      if (typeof dirent === 'string') dirent = { path: dirent };
-      const name = dirent.name;
-      const dir = dirent.dirname || dirent.cwd || process.cwd();
-      if (!name) dirent.name = dirent.basename || (dirent.path ? path.basename(dirent.path) : '');
-      if (!dirent.path && name) dirent.path = join(dir, dirent.name);
-      super(dirent.name, type);
+      if (typeof dirent === 'string') {
+        dirent = { path: dirent, name: path.basename(dirent) };
+      } else {
+        dirent = { ...dirent };
+      }
+
+      // console.log(dirent)
+      if (!('basename' in dirent) && 'path' in dirent) {
+        dirent.basename = path.basename(dirent.path);
+      }
+
+      const cwd = dirent.dirname || dirent.cwd || process.cwd();
+
+      if (!dirent.path && dirent.name) {
+        dirent.path = path.join(cwd, dirent.name);
+      }
+
+      super(null, type);
 
       this[kDirent] = dirent;
       this.contents = dirent.contents || null;
       this.stat = dirent.stat || null;
 
+      // replay history to get path normalization
       const history = [].concat(dirent.history || []).concat(dirent.path || []);
       this.history = [];
-
-      for (const value of history) {
-        this.path = value;
-      }
+      history.forEach(value => { this.path = value; });
 
       this.cwd = dirent.cwd || process.cwd();
-      this.base = dirent.base;
+      this.base = dirent.base || this.cwd;
 
       for (const key of Object.keys(dirent)) {
         if (!builtinProperties.has(key)) {
@@ -69,11 +80,13 @@ const create = cloneable => {
       return super.isDirectory();
     }
 
-    isSymlink() {
-      return this.isSymbolicLink();
-    }
+    // gulp compat
     isSymbolic() {
       return this.isNull() && this.isSymbolicLink();
+    }
+    // alias for isSymbolicLink
+    isSymlink() {
+      return this.isSymbolicLink();
     }
 
     isBuffer() {
@@ -117,8 +130,8 @@ const create = cloneable => {
 
     set contents(value) {
       assert(this.constructor.isValidContents(value), 'Expected file.contents to be a Buffer, Stream, or null.');
-      if (cloneable && isStream(value) && !cloneable.isCloneable(value)) {
-        value = cloneable(value);
+      if (clonableStream && isStream(value) && !clonableStream.isCloneable(value)) {
+        value = clonableStream(value);
       }
       this[kContents] = value;
     }
@@ -139,51 +152,57 @@ const create = cloneable => {
         delete this[kBase];
         return;
       }
-
       assert(value && typeof value === 'string', 'file.base should be a non-empty string, null, or undefined');
       value = normalize(value);
-
       if (value === this[kCwd]) {
         delete this[kBase];
         return;
       }
-
       this[kBase] = value;
     }
     get base() {
       return this[kBase] || this[kCwd];
     }
 
-    set dirname(dirname) {
+    set dirname(value) {
       assert(this.path, pathError('dirname', 'set'));
-      this.path = path.join(dirname, this.basename);
+      this.path = path.join(value, this.basename);
     }
     get dirname() {
       assert(this.path, pathError('dirname', 'get'));
       return path.dirname(this.path);
     }
 
-    set basename(basename) {
+    set basename(value) {
       assert(this.path, pathError('basename', 'set'));
-      this.path = path.join(this.dirname, basename);
+      this.path = path.join(this.dirname, value);
     }
     get basename() {
       assert(this.path, pathError('basename', 'get'));
       return path.basename(this.path);
     }
 
-    set stem(stem) {
+    set name(value) {
+      if (value && typeof value === 'string') {
+        this.basename = value;
+      }
+    }
+    get name() {
+      return this.basename;
+    }
+
+    set stem(value) {
       assert(this.path, pathError('stem', 'set'));
-      this.path = path.join(this.dirname, stem + this.extname);
+      this.path = path.join(this.dirname, value + this.extname);
     }
     get stem() {
       assert(this.path, pathError('stem', 'get'));
       return path.basename(this.path, this.extname);
     }
 
-    set extname(extname) {
+    set extname(value) {
       assert(this.path, pathError('extname', 'set'));
-      this.path = replaceExtname(this.path, extname);
+      this.path = replaceExtname(this.path, value);
     }
     get extname() {
       assert(this.path, pathError('extname', 'get'));
@@ -191,7 +210,7 @@ const create = cloneable => {
     }
 
     set symlink(value) {
-      assert(value, '"file.symlink" must be a string.');
+      assert(typeof value === 'string', 'Expected "file.symlink" to be a string.');
       this[kSymlink] = normalize(value);
     }
     get symlink() {
@@ -199,7 +218,7 @@ const create = cloneable => {
     }
 
     set path(value) {
-      assert(typeof value === 'string', '"file.path" must be a string.');
+      assert(typeof value === 'string', 'Expected "file.path" to be a string.');
       value = normalize(value);
       if (value && value !== this.path) {
         this.history.push(value);
@@ -256,12 +275,12 @@ const create = cloneable => {
       return value === null || isBuffer(value) || isStream(value);
     }
 
-    static create(cloneable) {
-      return create(cloneable);
+    static create(clonableStream) {
+      return create(clonableStream);
     }
   }
 
   return Dirent;
 };
 
-module.exports = create();
+module.exports = create(/*clonableStream*/);
