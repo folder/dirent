@@ -24,11 +24,11 @@
     "clone-deep": "^4.0.1"
   },
   "devDependencies": {
-    "cloneable-readable": "^2.0.1",
+    "cloneable-readable": "^2.1.0",
     "concat-stream": "^2.0.0",
     "from2": "^2.3.0",
     "gulp-format-md": "^2.0.0",
-    "mocha": "^8.0.1",
+    "mocha": "^8.3.2",
     "pump": "^3.0.0"
   },
   "keywords": [
