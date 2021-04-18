@@ -1,5 +1,6 @@
 'use strict';
 
+const { isPrototypeOf } = Object;
 const isWin = process.platform === 'win32';
 const fs = require('fs');
 const path = require('path');
@@ -828,8 +829,8 @@ describe('File', () => {
       assert(file2.constructor, ExtendedFile);
       assert(file2 instanceof ExtendedFile);
       assert(file2 instanceof File);
-      assert.equal(ExtendedFile.prototype.isPrototypeOf(file2), true);
-      assert.equal(File.prototype.isPrototypeOf(file2), true);
+      assert.equal(isPrototypeOf.call(ExtendedFile.prototype, file2), true);
+      assert.equal(isPrototypeOf.call(File.prototype, file2), true);
     });
   });
 
@@ -841,7 +842,7 @@ describe('File', () => {
         file.relative = 'test';
       }
 
-      assert.throws(invalid, 'File.relative is generated from the base and path attributes. Do not modify it.');
+      assert.throws(invalid, /may not be defined/);
     });
 
     it('throws on get with no path', () => {
@@ -851,7 +852,7 @@ describe('File', () => {
         return file.relative;
       }
 
-      assert.throws(invalid, 'No path specified! Can not get relative.');
+      assert.throws(invalid, 'No path specified! Cannot get relative.');
     });
 
     it('returns a relative path from base', () => {

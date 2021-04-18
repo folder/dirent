@@ -1,10 +1,40 @@
 'use strict';
 
 const { getOwnPropertyDescriptor } = Reflect;
-const isWindows = process.platform === 'win32';
+
 const fs = require('fs');
 const path = require('path');
 const isObject = value => value !== null && typeof value === 'object';
+const isWindows = process.platform === 'win32';
+
+exports.handlers = (Dirent, dirent) => ({
+  get(file, prop) {
+    if (exports.builtinProperties.has(prop)) return file[prop];
+
+    // use "dirent.constructor" for subclassing
+    const ctorProtoDesc = getOwnPropertyDescriptor(dirent.constructor.prototype, prop);
+    if (ctorProtoDesc && typeof ctorProtoDesc.value === 'function' && !(dirent instanceof fs.Dirent)) {
+      return ctorProtoDesc[prop];
+    }
+
+    // then check Dirent
+    const protoDesc = getOwnPropertyDescriptor(Dirent.prototype, prop);
+    if (protoDesc && typeof protoDesc.value === 'function') {
+      return file[prop];
+    }
+
+    // then "file"
+    const fileDesc = getOwnPropertyDescriptor(file.constructor.prototype, prop);
+    if (fileDesc && typeof fileDesc.value !== 'function') {
+      return file[prop];
+    }
+
+    // then "stat" and instance properties
+    const objects = [file.stat, dirent, dirent.stat];
+    const obj = objects.find(obj => obj && prop in obj) || file;
+    return obj[prop];
+  }
+});
 
 exports.builtinProperties = new Set(['constructor', 'contents', 'stat', 'history', 'path', 'base', 'cwd']);
 
@@ -69,28 +99,3 @@ exports.join = (...args) => {
   }
   return '';
 };
-
-exports.handlers = (Dirent, dirent) => ({
-  get(file, prop) {
-    if (exports.builtinProperties.has(prop)) return file[prop];
-
-    const direntDesc = getOwnPropertyDescriptor(dirent.constructor.prototype, prop);
-    if (direntDesc && typeof direntDesc.value === 'function' && !(dirent instanceof fs.Dirent)) {
-      return direntDesc[prop];
-    }
-
-    const protoDesc = getOwnPropertyDescriptor(Dirent.prototype, prop);
-    if (protoDesc && typeof protoDesc.value === 'function') {
-      return file[prop];
-    }
-
-    const fileDesc = getOwnPropertyDescriptor(file.constructor.prototype, prop);
-    if (fileDesc && typeof fileDesc.value !== 'function') {
-      return file[prop];
-    }
-
-    const objects = [file.stat, dirent, dirent.stat];
-    const obj = objects.find(obj => obj && prop in obj) || file;
-    return obj[prop];
-  }
-});

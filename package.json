@@ -1,37 +1,24 @@
 {
   "name": "dirent",
-  "description": "Virtual file class. Extends fs.Dirent with methods to simplify path handling. Like Vinyl, but lightweight.",
   "version": "1.0.1",
+  "description": "Virtual file class. Extends the native fs.Dirent class with methods to simplify path handling. Similar to Vinyl, but lightweight.",
+  "license": "MIT",
+  "repository": "folder/dirent",
   "homepage": "https://github.com/folder/dirent",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
-  "repository": "folder/dirent",
-  "bugs": {
-    "url": "https://github.com/folder/dirent/issues"
-  },
   "engines": {
     "node": ">=10"
+  },
+  "scripts": {
+    "test": "mocha",
+    "test:ci": "npm run test"
   },
   "files": [
     "index.js",
     "utils.js"
   ],
-  "license": "MIT",
-  "scripts": {
-    "test": "mocha",
-    "test:ci": "npm run test"
-  },
-  "dependencies": {
-    "clone-deep": "^4.0.1"
-  },
-  "devDependencies": {
-    "cloneable-readable": "^2.1.0",
-    "concat-stream": "^2.0.0",
-    "from2": "^2.3.0",
-    "gulp-format-md": "^2.0.0",
-    "mocha": "^8.3.2",
-    "pump": "^3.0.0"
-  },
   "keywords": [
+    "dir",
     "directory entity",
     "directory",
     "dirent",
@@ -45,9 +32,21 @@
     "readdir",
     "readdirsync",
     "vfile",
+    "vfs",
     "vinyl",
     "virtual file"
   ],
+  "dependencies": {
+    "clone-deep": "^4.0.1"
+  },
+  "devDependencies": {
+    "cloneable-readable": "^2.1.0",
+    "concat-stream": "^2.0.0",
+    "from2": "^2.3.0",
+    "gulp-format-md": "^2.0.0",
+    "mocha": "^8.3.2",
+    "pump": "^3.0.0"
+  },
   "verb": {
     "toc": false,
     "layout": "default",
