@@ -373,7 +373,7 @@ describe('File', () => {
       const val = '/test';
       const file = new File();
       file.cwd = val;
-      assert.equal(file.cwd, path.normalize(val));
+      assert.equal(file.cwd, isWin ? '\\test' : val);
     });
 
     it('normalizes and removes trailing separator on set', () => {
@@ -468,7 +468,7 @@ describe('File', () => {
       const base = '/test/';
       const file = new File();
       file.base = base;
-      assert.equal(file.base, base.slice(0, -1));
+      assert.equal(file.base, isWin ? '\\test' : '/test');
     });
 
     it('sets base', () => {
@@ -1346,7 +1346,7 @@ describe('File', () => {
       const file = new File();
       file.symlink = val;
 
-      assert.equal(file.symlink, val);
+      assert.equal(file.symlink, isWin ? '\\test\\test.coffee' : val);
     });
 
     it('throws on set with non-string', () => {
