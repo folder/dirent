@@ -65,7 +65,8 @@ exports.removeTrailingSeparator = str => {
 
 exports.normalize = str => {
   if (typeof str === 'string' && str !== '') {
-    return exports.removeTrailingSeparator(path.normalize(str)).normalize('NFC');
+    const output = exports.removeTrailingSeparator(path.normalize(str)).normalize('NFC');
+    return isWindows ? output.replace(/\\/g, '/') : output;
   }
   return str;
 };
