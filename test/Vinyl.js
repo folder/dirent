@@ -362,14 +362,7 @@ describe('File', () => {
   });
 
   describe('cwd get/set', () => {
-    it('returns cwd', () => {
-      const val = '/test';
-      const file = new File();
-      file.cwd = val;
-      assert.equal(file.cwd, val);
-    });
-
-    it('sets cwd', () => {
+    it('gets and sets cwd', () => {
       const val = '/test';
       const file = new File();
       file.cwd = val;
