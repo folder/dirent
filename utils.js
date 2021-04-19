@@ -52,45 +52,29 @@ exports.isStream = value => {
   return false;
 };
 
-exports.removeTrailingSeparator = str => {
+exports.removeTrailingSep = str => {
   let i = str.length;
   while (i > 1 && (str[i - 1] === '/' || (isWindows && str[i - 1] === '\\'))) i--;
   return str.slice(0, i);
 };
 
 exports.normalize = input => {
-  if (typeof input === 'string' && input !== '') {
-    input = path.normalize(exports.removeTrailingSeparator(input));
-  }
-  return input;
+  return input ? path.normalize(input) : '';
 };
 
 exports.replaceExtname = (filepath, extname) => {
-  if (typeof filepath !== 'string') {
-    return filepath;
+  if (typeof filepath !== 'string') return filepath;
+  if (filepath === '') return filepath;
+
+  const { dir, name } = path.parse(filepath);
+
+  if (!extname.startsWith('.')) {
+    extname = `.${extname}`;
   }
 
-  if (filepath.length === 0) {
-    return filepath;
-  }
-
-  const stem = path.basename(filepath, path.extname(filepath));
-  const newpath = path.join(path.dirname(filepath), stem + extname);
-
-  if (filepath[0] === '.' && (filepath[1] === '/' || filepath[1] === path.sep)) {
-    return `.${path.sep}${exports.normalize(newpath)}`;
-  }
-
-  return newpath;
+  return path.join(dir, `${name}${extname}`);
 };
 
 exports.pathError = (prop, key = 'set') => {
   return `Expected "file.path" to be a string, cannot ${key} "file.${prop}".`;
-};
-
-exports.join = (...args) => {
-  if (args.length) {
-    return /[\\/]/.test(args[args.length - 1]) ? path.resolve(...args) : path.join(...args);
-  }
-  return '';
 };

@@ -19,6 +19,7 @@ const {
   isStream,
   normalize,
   pathError,
+  removeTrailingSep,
   replaceExtname
 } = require('./utils');
 
@@ -128,7 +129,7 @@ const create = clonableStream => {
 
     set cwd(cwd) {
       assert(cwd && typeof cwd === 'string', 'file.cwd should be a non-empty string');
-      this[kCwd] = normalize(cwd);
+      this[kCwd] = removeTrailingSep(normalize(cwd));
     }
     get cwd() {
       return this[kCwd];
@@ -140,7 +141,7 @@ const create = clonableStream => {
         return;
       }
       assert(value && typeof value === 'string', 'file.base should be a non-empty string, null, or undefined');
-      value = normalize(value);
+      value = removeTrailingSep(normalize(value));
       if (value === this[kCwd]) {
         delete this[kBase];
         return;
@@ -198,7 +199,7 @@ const create = clonableStream => {
 
     set symlink(value) {
       assert(typeof value === 'string', 'Expected "file.symlink" to be a string.');
-      this[kSymlink] = normalize(value);
+      this[kSymlink] = removeTrailingSep(normalize(value));
     }
     get symlink() {
       return this[kSymlink] || null;
@@ -206,7 +207,7 @@ const create = clonableStream => {
 
     set path(value) {
       assert(typeof value === 'string', 'Expected "file.path" to be a string.');
-      value = normalize(value);
+      value = removeTrailingSep(normalize(value));
       if (value && value !== this.path) {
         this.history.push(value);
       }
