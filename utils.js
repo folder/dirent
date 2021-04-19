@@ -60,7 +60,7 @@ exports.removeTrailingSeparator = str => {
 
 exports.normalize = input => {
   if (typeof input === 'string' && input !== '') {
-    return exports.removeTrailingSeparator(path.normalize(input.normalize('NFC')));
+    input = path.normalize(exports.removeTrailingSeparator(input));
   }
   return input;
 };

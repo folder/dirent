@@ -2,7 +2,7 @@
 
 require('mocha');
 const fs = require('fs');
-const assert = require('assert').strict;
+const assert = require('assert/strict');
 const cloneable = require('cloneable-readable');
 const concat = require('concat-stream');
 const from = require('from2');
