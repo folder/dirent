@@ -29,24 +29,11 @@ const {
 const create = clonableStream => {
   class Dirent extends fs.Dirent {
     constructor(dirent = {}, type) {
-      if (typeof dirent === 'string') {
-        dirent = { path: dirent, name: path.basename(dirent) };
-      } else {
-        dirent = { ...dirent };
-      }
-
-      // console.log(dirent)
-      if (!('basename' in dirent) && 'path' in dirent) {
-        dirent.basename = path.basename(dirent.path);
-      }
-
-      const cwd = dirent.dirname || dirent.cwd || process.cwd();
-
-      if (!dirent.path && dirent.name) {
-        dirent.path = path.join(cwd, dirent.name);
-      }
-
       super(null, type);
+
+      if (typeof dirent === 'string') {
+        dirent = { path: dirent };
+      }
 
       this[kDirent] = dirent;
       this.contents = dirent.contents || null;
@@ -58,7 +45,7 @@ const create = clonableStream => {
       history.forEach(value => { this.path = value; });
 
       this.cwd = dirent.cwd || process.cwd();
-      this.base = dirent.base || this.cwd;
+      this.base = dirent.base;
 
       for (const key of Object.keys(dirent)) {
         if (!builtinProperties.has(key)) {

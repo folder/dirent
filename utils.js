@@ -54,21 +54,15 @@ exports.isStream = value => {
 
 exports.removeTrailingSeparator = str => {
   let i = str.length;
-
-  const hasSeparator = str => {
-    return i > 1 && str[i - 1] === '/' || (isWindows && str[i - 1] === '\\');
-  };
-
-  while (hasSeparator(str)) i--;
+  while (i > 1 && (str[i - 1] === '/' || (isWindows && str[i - 1] === '\\'))) i--;
   return str.slice(0, i);
 };
 
-exports.normalize = str => {
-  if (typeof str === 'string' && str !== '') {
-    const output = exports.removeTrailingSeparator(path.normalize(str)).normalize('NFC');
-    return isWindows ? output.replace(/\\/g, '/') : output;
+exports.normalize = input => {
+  if (typeof input === 'string' && input !== '') {
+    return exports.removeTrailingSeparator(path.normalize(input.normalize('NFC')));
   }
-  return str;
+  return input;
 };
 
 exports.replaceExtname = (filepath, extname) => {
