@@ -96,7 +96,7 @@ $ npm install -g verbose/verb#dev verb-generate-readme && verb
 
 | **Commits** | **Contributor** |  
 | --- | --- |  
-| 19 | [jonschlinkert](https://github.com/jonschlinkert) |  
+| 25 | [jonschlinkert](https://github.com/jonschlinkert) |  
 | 2  | [doowb](https://github.com/doowb) |  
 
 ### Author
