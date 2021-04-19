@@ -5,7 +5,7 @@ const isWin = process.platform === 'win32';
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-const assert = require('assert/strict');
+const assert = require('assert').strict;
 const concat = require('concat-stream');
 const from = require('from2');
 const pipe = require('pump');
