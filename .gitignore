@@ -66,3 +66,4 @@ temp/
 vendor/
 .DS_Store
 *.sublime-*
+*lock.*

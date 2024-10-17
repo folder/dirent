@@ -29,8 +29,8 @@ const {
 
 const create = clonableStream => {
   class Dirent extends fs.Dirent {
-    constructor(dirent = {}, type) {
-      super(null, type);
+    constructor(dirent = {}, type = '') {
+      super(null, type, '');
 
       if (typeof dirent === 'string') {
         dirent = { path: dirent };

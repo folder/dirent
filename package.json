@@ -1,6 +1,6 @@
 {
   "name": "dirent",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Virtual file class. Extends the native fs.Dirent class with methods to simplify path handling. Similar to Vinyl, but lightweight.",
   "license": "MIT",
   "repository": "folder/dirent",
